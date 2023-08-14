@@ -1,3 +1,3 @@
 fn main() {
-    println!("Hello, world!");
+    println!("hello world"); // why this? open chat better
 }
