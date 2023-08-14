@@ -1,10 +1,11 @@
 use crate::ir::values::value::Value;
 use crate::ir::values::value::Type;
+use crate::ir::values::value::ValueEntity;
 use crate::ir::values::function::Function;
 
 pub struct BasicBlock {
     value: Value,
-    instructions: Vec<Value>,
+    instructions: Vec<ValueEntity>,
 
     parent: Function,
 }
@@ -20,7 +21,7 @@ impl BasicBlock {
         }
     }
 
-    pub fn insert(&mut self, instruction: Value) {
+    pub fn insert(&mut self, instruction: ValueEntity) {
         self.instructions.push(instruction);
     }
 

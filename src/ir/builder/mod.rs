@@ -2,6 +2,7 @@ mod ctx;
 
 use crate::ir::values::value::Value;
 use crate::ir::values::basic_block::BasicBlock;
+use crate::ir::values::value::ValueEntity;
 
 pub struct Builder {
     pub ctx: ctx::IRContext,
@@ -18,7 +19,7 @@ impl Builder {
         self.ctx.insertion_point = Some(insertion_point);
     }
 
-    pub fn insert(&mut self, value: Value) {
+    pub fn insert(&mut self, value: ValueEntity) {
         // we can't insert to a non-existent insertion point
         match &mut self.ctx.insertion_point {
             Some(ref mut insertion_point) => {

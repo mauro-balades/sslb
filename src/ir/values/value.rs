@@ -1,9 +1,15 @@
+use crate::ir::values::function::Function;
 use crate::ir::values::basic_block::BasicBlock;
 
 pub struct Value {
     ty: Type,
     use_list: Vec<Value>,
     name: String,
+}
+
+pub enum ValueEntity {
+    Function(Function),
+    BasicBlock(BasicBlock),
 }
 
 pub enum Type {
@@ -15,6 +21,18 @@ pub enum Type {
     Struct(/* field types = */ Vec<Type>),
     Void,
     Branch,
+}
+
+impl From<Function> for ValueEntity {
+    fn from(function: Function) -> Self {
+        Self::Function(function)
+    }
+}
+
+impl From<BasicBlock> for ValueEntity {
+    fn from(basic_block: BasicBlock) -> Self {
+        Self::BasicBlock(basic_block)
+    }
 }
 
 impl Value {
