@@ -1,5 +1,3 @@
 
-mod module;
-mod value;
-mod function;
-mod basic_block;
+pub mod module;
+pub mod values;

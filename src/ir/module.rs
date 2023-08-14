@@ -1,4 +1,4 @@
-use crate::ir::function::Function;
+use crate::ir::values::function::Function;
 use crate::targets::triple::TargetTriple;
 use crate::targets::layout::DataLayout;
 
