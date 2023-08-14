@@ -1,3 +1,3 @@
 
-mod ir;
-mod targets;
+pub mod ir;
+pub mod targets;

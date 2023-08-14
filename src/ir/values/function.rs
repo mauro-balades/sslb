@@ -6,6 +6,9 @@ pub struct Function {
     value: Value,
 
     name: String,
-    args: Vec<Type>,
-    blocks: Vec<BasicBlock>
+    blocks: Vec<BasicBlock>,
+    params: Vec<Value>,
+
+    is_external: bool,
+    is_var_arg: bool,
 }
