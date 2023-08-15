@@ -1,17 +1,20 @@
 use crate::ir::values::function::Function;
 use crate::ir::values::basic_block::BasicBlock;
 
+#[derive(Debug, Clone, PartialEq)]
 pub struct Value {
     ty: Type,
     use_list: Vec<Value>,
     name: String,
 }
 
+#[derive(Debug, Clone, PartialEq)]
 pub enum ValueEntity {
     Function(Function),
     BasicBlock(BasicBlock),
 }
 
+#[derive(Debug, Clone, PartialEq)]
 pub enum Type {
     Integer(usize),
     Float(usize),
@@ -60,3 +63,16 @@ impl Value {
         self.use_list.push(value);
     }
 }
+
+#[macro_export]
+macro_rules! impl_for_value {
+    ($name:ident {$($field:ident: $t:ty,)*}) => {
+        #[derive(Debug, Clone, PartialEq)] // ewww
+        pub struct $name {
+            value: Value,
+
+            $($field: $t),*
+        }
+    }
+}
+

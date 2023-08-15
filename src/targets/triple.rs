@@ -1,6 +1,7 @@
 use crate::error::Error;
 
 /// Represents a target triple, which consists of architecture, vendor, and target OS information.
+#[derive(PartialEq, Clone, Debug)]
 pub struct TargetTriple {
     /// The architecture of the target.
     pub arch: Arch,
@@ -11,6 +12,7 @@ pub struct TargetTriple {
 }
 
 /// Represents different architectures that a target can have.
+#[derive(PartialEq, Clone, Debug, Copy)]
 pub enum Arch {
     /// x86 architecture.
     X86,
@@ -33,6 +35,7 @@ pub enum Arch {
 }
 
 /// Represents different vendors for the target.
+#[derive(PartialEq, Clone, Debug, Copy)]
 pub enum Vendor {
     /// Unknown vendor.
     Unknown,
@@ -45,6 +48,7 @@ pub enum Vendor {
 }
 
 /// Represents different target operating systems.
+#[derive(PartialEq, Clone, Debug, Copy)]
 pub enum TargetOS {
     /// Unknown operating system.
     Unknown,

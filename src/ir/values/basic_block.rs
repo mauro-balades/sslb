@@ -1,14 +1,14 @@
+use crate::impl_for_value;
 use crate::ir::values::value::Value;
 use crate::ir::values::value::Type;
 use crate::ir::values::value::ValueEntity;
 use crate::ir::values::function::Function;
 
-pub struct BasicBlock {
-    value: Value,
+impl_for_value!(BasicBlock {
     instructions: Vec<ValueEntity>,
 
     parent: Function,
-}
+});
 
 impl BasicBlock {
     pub fn new(name: String, parent: Function) -> Self {
