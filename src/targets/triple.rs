@@ -135,6 +135,10 @@ impl TargetTriple {
         Ok(TargetTriple { arch, vendor, os })
     }
 
+    pub fn from_parts(arch: Arch, vendor: Vendor, os: TargetOS) -> Self {
+        TargetTriple { arch, vendor, os }
+    }
+
     /// Returns the target triple as a string.
     pub fn as_str(&self) -> String {
         let arch = match self.arch {
@@ -264,5 +268,26 @@ impl TargetTriple {
     /// Returns the target triple for the current host as a string.
     pub fn host_str() -> String {
         Self::from_host().unwrap().as_str()
+    }
+
+    /// Returns whether the target triple is the same as the current host.
+    pub fn is_host(&self) -> bool {
+        let host = Self::from_host().unwrap();
+        self.arch == host.arch && self.vendor == host.vendor && self.os == host.os
+    }
+
+    /// Get the architecture of the target.
+    pub fn arch(&self) -> Arch {
+        self.arch
+    }
+
+    /// Get the vendor of the target.
+    pub fn vendor(&self) -> Vendor {
+        self.vendor
+    }
+
+    /// Get the target operating system.
+    pub fn os(&self) -> TargetOS {
+        self.os
     }
 }
