@@ -18,3 +18,35 @@ pub struct Module {
     data_layout: DataLayout,
     target_triple: TargetTriple,
 }
+
+impl Module {
+    /// Creates a new module builder.
+    pub fn new(name: &str, data_layout: DataLayout, target_triple: TargetTriple) -> Self {
+        Self {
+            functions: Vec::new(),
+            name: name.to_string(),
+            data_layout,
+            target_triple,
+        }
+    }
+
+    /// Returns the name of the module.
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// Returns the data layout of the module.
+    pub fn data_layout(&self) -> &DataLayout {
+        &self.data_layout
+    }
+
+    /// Returns the target triple of the module.
+    pub fn target_triple(&self) -> &TargetTriple {
+        &self.target_triple
+    }
+
+    /// Returns the functions of the module.
+    pub fn functions(&self) -> &[Function] {
+        &self.functions
+    }
+}
