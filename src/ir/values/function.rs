@@ -14,9 +14,9 @@ impl_for_value!(Function {
 });
 
 impl Function {
-    pub fn new(name: String, params: Vec<Value>, retTy: Type, is_var_arg: bool, linkage: Linkage) -> Self {
-        let argTypes = params.iter().map(|param| param.get_type()).collect();
-        let val = Value::new(Type::FunctionType(argTypes, Box::new(retTy)), name);
+    pub fn new(name: String, params: Vec<Value>, ret_ty: Type, is_var_arg: bool, linkage: Linkage) -> Self {
+        let arg_types = params.iter().map(|param| param.get_type()).collect();
+        let val = Value::new(Type::FunctionType(arg_types, Box::new(ret_ty)), name);
         Self {
             value: val,
             blocks: vec![],

@@ -83,7 +83,7 @@ impl Builder {
         Type::FunctionType(argument_types, Box::new(return_type))
     }
 
-    pub fn get_iN_type(&self, bit_width: usize) -> Type {
+    pub fn get_int_n_type(&self, bit_width: usize) -> Type {
         Type::Integer(bit_width)
     }
 
