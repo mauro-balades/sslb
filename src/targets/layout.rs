@@ -3,6 +3,7 @@ use crate::targets::triple::Arch;
 use std::fmt::Debug;
 use std::fmt::Formatter;
 use std::fmt;
+use std::fmt::Display;
 
 #[derive(Clone)]
 pub struct DataLayout {
@@ -320,5 +321,11 @@ impl Debug for DataLayout {
             .field("f64_size", &self.f64_size)
             .field("f64_align", &self.f64_align)
             .finish()
+    }
+}
+
+impl Display for DataLayout {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        write!(f, "p{}:{}", self.pointer_size, self.pointer_align) // TODO
     }
 }

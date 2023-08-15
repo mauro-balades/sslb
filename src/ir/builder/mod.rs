@@ -6,6 +6,9 @@ use crate::ir::values::value::ValueEntity;
 use crate::ir::values::instruction::Instruction;
 use crate::ir::values::instruction::InstructionType;
 use crate::ir::values::value::Type;
+use crate::ir::values::function::Function;
+use crate::ir::linkage::Linkage;
+use crate::utils::find_element;
 
 pub use crate::ir::builder::ctx::IRContext;
 
@@ -18,6 +21,10 @@ impl Builder {
         Self {
             ctx,
         }
+    }
+
+    pub fn get_module(&self) -> &crate::ir::module::Module {
+        self.ctx.get_module()
     }
 
     pub fn set_insertion_point(&mut self, insertion_point: BasicBlock) {
@@ -93,8 +100,38 @@ impl Builder {
         Type::Branch
     }
 
-    // create instructions
+    // utility
 
+    pub fn add_function(&mut self, name: &str, argument_types: Vec<Type>, return_type: Type, linkage: Linkage) -> Function {
+        let fn_type = self.get_function_type(return_type.clone(), argument_types.clone());
+        let value = Function::create(self.ctx.get_module().get_global_value_name(name), fn_type, linkage);
+        self.ctx.get_module_mut().add_function(value.clone());
+        value.clone()
+    }
+
+    pub fn add_extern_function(&mut self, name: &str, argument_types: Vec<Type>, return_type: Type) -> Function {
+        self.add_function(name, argument_types, return_type, Linkage::ExternalLinkage)
+    }
+
+    pub fn get_or_create_function(&mut self, name: &str, argument_types: Vec<Type>, return_type: Type) -> Function {
+        match find_element(self.ctx.get_module().get_functions(), |x: &Function| x.get_name() == &name.to_string()) {
+            Some(value) => {
+                assert_eq!(value.get_type(), self.get_function_type(return_type, argument_types));
+                value.clone()
+            },
+            None => {
+                self.add_extern_function(name, argument_types, return_type)
+            },
+        }
+    }
+
+    // create instructions
+    pub fn create_block(&mut self, name: &str, function: &mut Function) -> BasicBlock { // TODO: name can be empty!
+        let value = BasicBlock::new(self.ctx.get_module().get_global_value_name(name), function.clone());
+        function.add_block(value.clone());
+        value
+    }
+    
     pub fn add(&mut self, lhs: Value, rhs: Value) -> Instruction {
         assert_eq!(lhs.get_type(), rhs.get_type());
         assert!(lhs.get_type().is_integer() || lhs.get_type().is_float());

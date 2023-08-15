@@ -2,6 +2,8 @@ use crate::ir::values::function::Function;
 use crate::ir::values::basic_block::BasicBlock;
 use crate::ir::values::instruction::Instruction;
 
+use std::string::ToString;
+
 #[derive(Debug, Clone, Eq)]
 pub struct Value {
     ty: Type,
@@ -177,6 +179,43 @@ macro_rules! impl_for_value {
             value: Value,
 
             $($field: $t),*
+        }
+    }
+}
+
+impl ToString for Value {
+    fn to_string(&self) -> String {
+        self.name.clone()
+    }
+}
+
+impl ToString for Type {
+    fn to_string(&self) -> String {
+        match self {
+            Type::Integer(size) => format!("i{}", size),
+            Type::Float(size) => format!("f{}", size),
+            Type::FunctionType(args, ret) => {
+                let args = args.iter().map(|arg| arg.to_string()).collect::<Vec<_>>().join(", ");
+                format!("{} -> {}", args, ret.to_string())
+            }
+            Type::Pointer(ty) => format!("{}*", ty.to_string()),
+            Type::Array(len, ty) => format!("[{} x {}]", len, ty.to_string()),
+            Type::Struct(tys) => {
+                let tys = tys.iter().map(|ty| ty.to_string()).collect::<Vec<_>>().join(", ");
+                format!("{{ {} }}", tys)
+            }
+            Type::Void => "void".to_string(),
+            Type::Branch => "branch".to_string(),
+        }
+    }
+}
+
+impl ToString for ValueEntity {
+    fn to_string(&self) -> String {
+        match self {
+            ValueEntity::Function(function) => function.to_string(),
+            ValueEntity::BasicBlock(basic_block) => basic_block.to_string(),
+            ValueEntity::Instruction(instruction) => instruction.to_string(),
         }
     }
 }

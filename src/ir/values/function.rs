@@ -3,6 +3,7 @@ use crate::ir::values::value::Value;
 use crate::ir::values::basic_block::{BasicBlock};
 use crate::ir::linkage::Linkage;
 use crate::ir::values::value::Type;
+use std::fmt::{Display, Formatter};
 
 impl_for_value!(Function {
     blocks: Vec<BasicBlock>,
@@ -58,6 +59,10 @@ impl Function {
         self.blocks.iter_mut().find(|block| block.get_name() == name)
     }
 
+    pub fn add_block(&mut self, block: BasicBlock) {
+        self.blocks.push(block);
+    }
+
     pub fn get_param(&self, name: &str) -> Option<&Value> {
         self.params.iter().find(|param| param.get_name() == name)
     }
@@ -77,10 +82,25 @@ impl Function {
     pub fn get_function_return_type(&self) -> Type {
         self.value.get_type().get_function_return_type()
     }
+
+    pub fn get_type(&self) -> Type {
+        self.value.get_type()
+    }
 }
 
 impl PartialEq for Function {
     fn eq(&self, other: &Self) -> bool {
         self.get_name() == other.get_name() && other.value == self.value
+    }
+}
+
+impl Display for Function {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let mut params = String::new();
+        for param in &self.params {
+            params.push_str(&format!("{}: {}, ", param.get_name(), param.get_type().to_string()));
+        }
+        let body = self.blocks.iter().map(|block| block.to_string()).collect::<Vec<String>>().join("\n");
+        write!(f, "function @{}({}) -> {} {{\n{}\n}}", self.get_name(), params, self.get_function_return_type().to_string(), body)
     }
 }

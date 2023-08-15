@@ -3,6 +3,7 @@ use crate::ir::values::value::Value;
 use crate::ir::values::value::Type;
 use crate::ir::values::value::ValueEntity;
 use crate::ir::values::function::Function;
+use std::string::ToString;
 
 impl_for_value!(BasicBlock {
     instructions: Vec<ValueEntity>,
@@ -57,5 +58,15 @@ impl BasicBlock {
 impl PartialEq for BasicBlock {
     fn eq(&self, other: &Self) -> bool {
         self.value == other.value
+    }
+}
+
+impl ToString for BasicBlock {
+    fn to_string(&self) -> String {
+        let mut string = format!("{}:\n", self.value.to_string());
+        for instruction in &self.instructions {
+            string.push_str(&format!("  {}\n", instruction.to_string()));
+        }
+        string
     }
 }
