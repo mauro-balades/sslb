@@ -7,6 +7,8 @@ use crate::ir::values::instruction::Instruction;
 use crate::ir::values::instruction::InstructionType;
 use crate::ir::values::value::Type;
 
+pub use crate::ir::builder::ctx::IRContext;
+
 pub struct Builder {
     pub ctx: ctx::IRContext,
 }

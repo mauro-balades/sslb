@@ -1,7 +1,9 @@
 use crate::error::Error;
+use std::fmt::Debug;
+use std::fmt::Formatter;
 
 /// Represents a target triple, which consists of architecture, vendor, and target OS information.
-#[derive(PartialEq, Clone, Debug)]
+#[derive(PartialEq, Clone)]
 pub struct TargetTriple {
     /// The architecture of the target.
     pub arch: Arch,
@@ -293,5 +295,11 @@ impl TargetTriple {
     /// Get the target operating system.
     pub fn os(&self) -> TargetOS {
         self.os
+    }
+}
+
+impl Debug for TargetTriple {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.as_str())
     }
 }
