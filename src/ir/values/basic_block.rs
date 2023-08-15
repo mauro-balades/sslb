@@ -28,4 +28,34 @@ impl BasicBlock {
     pub fn get_parent(&self) -> &Function {
         &self.parent
     }
+
+    pub fn get_type(&self) -> Type {
+        self.value.get_type()
+    }
+
+    pub fn get_name(&self) -> &String {
+        self.value.get_name()
+    }
+
+    pub fn get_instructions(&self) -> &Vec<ValueEntity> {
+        &self.instructions
+    }
+
+    pub fn get_instructions_mut(&mut self) -> &mut Vec<ValueEntity> {
+        &mut self.instructions
+    }
+
+    pub fn get_value(&self) -> &Value {
+        &self.value
+    }
+
+    pub fn get_value_mut(&mut self) -> &mut Value {
+        &mut self.value
+    }
+}
+
+impl PartialEq for BasicBlock {
+    fn eq(&self, other: &Self) -> bool {
+        self.value == other.value
+    }
 }
