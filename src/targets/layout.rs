@@ -287,43 +287,6 @@ impl DataLayout {
     }
 }
 
-impl Debug for DataLayout {
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        f.debug_struct("DataLayout")
-            .field("pointer_size", &self.pointer_size)
-            .field("pointer_align", &self.pointer_align)
-            .field("usize_size", &self.usize_size)
-            .field("usize_align", &self.usize_align)
-            .field("isize_size", &self.isize_size)
-            .field("isize_align", &self.isize_align)
-            .field("u8_size", &self.u8_size)
-            .field("u8_align", &self.u8_align)
-            .field("i8_size", &self.i8_size)
-            .field("i8_align", &self.i8_align)
-            .field("u16_size", &self.u16_size)
-            .field("u16_align", &self.u16_align)
-            .field("i16_size", &self.i16_size)
-            .field("i16_align", &self.i16_align)
-            .field("u32_size", &self.u32_size)
-            .field("u32_align", &self.u32_align)
-            .field("i32_size", &self.i32_size)
-            .field("i32_align", &self.i32_align)
-            .field("u64_size", &self.u64_size)
-            .field("u64_align", &self.u64_align)
-            .field("i64_size", &self.i64_size)
-            .field("i64_align", &self.i64_align)
-            .field("u128_size", &self.u128_size)
-            .field("u128_align", &self.u128_align)
-            .field("i128_size", &self.i128_size)
-            .field("i128_align", &self.i128_align)
-            .field("f32_size", &self.f32_size)
-            .field("f32_align", &self.f32_align)
-            .field("f64_size", &self.f64_size)
-            .field("f64_align", &self.f64_align)
-            .finish()
-    }
-}
-
 impl Display for DataLayout {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         write!(f, "p{}:{}", self.pointer_size, self.pointer_align) // TODO

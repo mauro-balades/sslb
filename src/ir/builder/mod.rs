@@ -9,6 +9,7 @@ use crate::ir::values::value::Type;
 use crate::ir::values::function::Function;
 use crate::ir::linkage::Linkage;
 use crate::utils::find_element;
+use std::borrow::Borrow;
 
 pub use crate::ir::builder::ctx::IRContext;
 
@@ -102,28 +103,27 @@ impl Builder {
 
     // utility
 
-    pub fn add_function(&mut self, name: &str, argument_types: Vec<Type>, return_type: Type, linkage: Linkage) -> Function {
-        let fn_type = self.get_function_type(return_type.clone(), argument_types.clone());
-        let value = Function::create(self.ctx.get_module().get_global_value_name(name), fn_type, linkage);
-        self.ctx.get_module_mut().add_function(value.clone());
-        value.clone()
+    pub fn create_function(&self, name: &str, argument_types: Vec<Type>, return_type: Type, linkage: Linkage) -> Function {
+        let fn_type = self.get_function_type(return_type, argument_types);
+        Function::create(self.ctx.get_module().get_global_value_name(name), fn_type, linkage)
     }
 
-    pub fn add_extern_function(&mut self, name: &str, argument_types: Vec<Type>, return_type: Type) -> Function {
-        self.add_function(name, argument_types, return_type, Linkage::ExternalLinkage)
+    pub fn add_function(&mut self, function: Function) {
+        self.ctx.get_module_mut().add_function(function)
     }
 
-    pub fn get_or_create_function(&mut self, name: &str, argument_types: Vec<Type>, return_type: Type) -> Function {
-        match find_element(self.ctx.get_module().get_functions(), |x: &Function| x.get_name() == &name.to_string()) {
-            Some(value) => {
-                assert_eq!(value.get_type(), self.get_function_type(return_type, argument_types));
-                value.clone()
-            },
-            None => {
-                self.add_extern_function(name, argument_types, return_type)
-            },
-        }
-    }
+    //pub fn get_or_create_function(&mut self, name: &str, argument_types: Vec<Type>, return_type: Type) -> &mut Function {
+    //    let new_function = if let Some(existing_function) = self.ctx.get_module().get_functions().iter().find(|x| x.get_name() == name) {
+    //        assert_eq!(existing_function.get_type(), self.get_function_type(return_type, argument_types));
+    //        existing_function
+    //    } else {
+    //        self.add_extern_function(name, argument_types, return_type)
+    //    };
+    //
+    //    // Ensure the lifetime of the returned reference doesn't exceed the borrow of `self`
+    //    new_function
+    //}
+    
 
     // create instructions
     pub fn create_block(&mut self, name: &str, function: &mut Function) -> BasicBlock { // TODO: name can be empty!
