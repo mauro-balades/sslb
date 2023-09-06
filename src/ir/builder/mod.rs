@@ -83,6 +83,10 @@ impl Builder {
         Type::Float(64)
     }
 
+    pub fn get_i8_ptr_type(&self) -> Type {
+        self.get_pointer_type(self.get_i8_type())
+    }
+
     pub fn get_pointer_type(&self, element_type: Type) -> Type {
         element_type.get_pointer_to()
     }
@@ -105,13 +109,11 @@ impl Builder {
 
     // utility
 
-    pub fn create_function(&self, name: &str, argument_types: Vec<Type>, return_type: Type, linkage: Linkage) -> Rc<RefCell<Function>> {
+    pub fn create_function(&mut self, name: &str, argument_types: Vec<Type>, return_type: Type, linkage: Linkage, is_varg: bool) -> Rc<RefCell<Function>> {
         let fn_type = self.get_function_type(return_type, argument_types);
-        Rc::new(RefCell::new(Function::create(self.ctx.get_module().get_global_value_name(name), fn_type, linkage)))
-    }
-
-    pub fn add_function(&mut self, function: Rc<RefCell<Function>>) {
-        self.ctx.get_module_mut().add_function(function)
+        let func = Rc::new(RefCell::new(Function::create(self.ctx.get_module().get_global_value_name(name), fn_type, linkage, is_varg)));
+        self.ctx.get_module_mut().add_function(func.clone()); // TODO: add arguments
+        func
     }
 
     //pub fn get_or_create_function(&mut self, name: &str, argument_types: Vec<Type>, return_type: Type) -> &mut Function {

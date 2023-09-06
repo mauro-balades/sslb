@@ -30,14 +30,14 @@ impl Function {
         }
     }
 
-    pub fn create(name: String, ty: Type, linkage: Linkage) -> Self {
+    pub fn create(name: String, ty: Type, linkage: Linkage, is_varg: bool) -> Self {
         assert!(ty.is_function_type());
         let val = Value::new(ty, name);
         Self {
             value: val,
             blocks: vec![],
             params: vec![],
-            is_var_arg: false,
+            is_var_arg: is_varg,
             linkage: linkage,
         }
     }
@@ -66,7 +66,7 @@ impl Function {
         if self.linkage == Linkage::ExternalLinkage {
             panic!("Cannot add block to external function");
         }
-        
+
         self.blocks.push(block);
     }
 
@@ -113,15 +113,20 @@ impl Display for Function {
             Linkage::LinkonceLinkage => "linkonce",
             Linkage::WeakLinkage => "weak",
         };
-        if self.linkage == Linkage::ExternalLinkage {
-            return write!(f, "declare {} function @{}({}) -> {}", linkage, self.get_name(), self.params.iter().map(|param| param.get_type().to_string()).collect::<Vec<String>>().join(", "), self.get_function_return_type().to_string());
-        }
-
         let mut params = String::new();
         for param in &self.params {
             params.push_str(&format!("{}: {}, ", param.get_name(), param.get_type().to_string()));
         }
+        if self.is_var_arg {
+            if params.len() > 0 {
+                params.push_str(", ");
+            }
+            params.push_str("...");
+        }
+        if self.linkage == Linkage::ExternalLinkage {
+            return write!(f, "declare {} function @{}({}) -> {}\n", linkage, self.get_name(), params, self.get_function_return_type().to_string());
+        }
         let body = self.blocks.iter().map(|block| block.borrow().to_string()).collect::<Vec<String>>().join("\n");
-        write!(f, "define {} function @{}({}) -> {} {{\n{}}}", linkage, self.get_name(), params, self.get_function_return_type().to_string(), body)
+        write!(f, "define {} function @{}({}) -> {} {{\n{}}}\n", linkage, self.get_name(), params, self.get_function_return_type().to_string(), body)
     }
 }
