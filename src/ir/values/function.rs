@@ -4,9 +4,12 @@ use crate::ir::values::basic_block::{BasicBlock};
 use crate::ir::linkage::Linkage;
 use crate::ir::values::value::Type;
 use std::fmt::{Display, Formatter};
+use std::cell::RefCell;
+use std::rc::Rc;
+use std::ops::Deref;
 
 impl_for_value!(Function {
-    blocks: Vec<BasicBlock>,
+    blocks: Vec<Rc<RefCell<BasicBlock>>>,
     params: Vec<Value>,
 
     is_var_arg: bool,
@@ -51,15 +54,15 @@ impl Function {
         &self.value.get_name()
     }
 
-    pub fn get_block(&self, name: &str) -> Option<&BasicBlock> {
-        self.blocks.iter().find(|block| block.get_name() == name)
+    pub fn get_block(&self, name: &str) -> Option<&Rc<RefCell<BasicBlock>>> {
+        self.blocks.iter().find(|block| block.borrow().get_name() == name)
     }
 
-    pub fn get_block_mut(&mut self, name: &str) -> Option<&mut BasicBlock> {
-        self.blocks.iter_mut().find(|block| block.get_name() == name)
+    pub fn get_block_mut(&mut self, name: &str) -> Option<&mut Rc<RefCell<BasicBlock>>> {
+        self.blocks.iter_mut().find(|block| block.borrow().get_name() == name)
     }
 
-    pub fn add_block(&mut self, block: BasicBlock) {
+    pub fn add_block(&mut self, block: Rc<RefCell<BasicBlock>>) {
         self.blocks.push(block);
     }
 
@@ -100,7 +103,17 @@ impl Display for Function {
         for param in &self.params {
             params.push_str(&format!("{}: {}, ", param.get_name(), param.get_type().to_string()));
         }
-        let body = self.blocks.iter().map(|block| block.to_string()).collect::<Vec<String>>().join("\n");
-        write!(f, "function @{}({}) -> {} {{\n{}\n}}", self.get_name(), params, self.get_function_return_type().to_string(), body)
+        let body = self.blocks.iter().map(|block| block.borrow().to_string()).collect::<Vec<String>>().join("\n");
+        let linkage = match self.linkage {
+            Linkage::ExternalLinkage => "external",
+            Linkage::InternalLinkage => "internal",
+            Linkage::PrivateLinkage => "private",
+            Linkage::ExternalWeakLinkage => "external weak",
+            Linkage::CommonLinkage => "common",
+            Linkage::AppendingLinkage => "appending",
+            Linkage::LinkonceLinkage => "linkonce",
+            Linkage::WeakLinkage => "weak",
+        };
+        write!(f, "define {} function @{}({}) -> {} {{\n{}}}", linkage, self.get_name(), params, self.get_function_return_type().to_string(), body)
     }
 }

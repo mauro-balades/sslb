@@ -3,6 +3,8 @@ use crate::targets::triple::TargetTriple;
 use crate::targets::layout::DataLayout;
 use std::fmt::Display;
 use std::fmt::Formatter;
+use std::cell::RefCell;
+use std::rc::Rc;
 
 /// A module builder for constructing Intermediate Representation (IR) modules.
 ///
@@ -15,7 +17,7 @@ use std::fmt::Formatter;
 /// types of instructions, such as memory operations, control flow manipulations,
 /// arithmetic computations, and more, can be added and managed seamlessly.
 pub struct Module {
-    functions: Vec<Function>,
+    functions: Vec<Rc<RefCell<Function>>>,
     name: String,
     data_layout: DataLayout,
     target_triple: TargetTriple,
@@ -50,12 +52,12 @@ impl Module {
     }
 
     /// Returns the functions of the module.
-    pub fn get_functions(&self) -> &Vec<Function> {
+    pub fn get_functions(&self) -> &Vec<Rc<RefCell<Function>>> {
         &self.functions
     }
 
     /// Adds a function to the module.
-    pub fn add_function(&mut self, function: Function) {
+    pub fn add_function(&mut self, function: Rc<RefCell<Function>>) {
         self.functions.push(function);
     }
 
@@ -85,7 +87,7 @@ impl Display for Module {
         s.push_str(&format!("target triple = \"{}\"\n", self.target_triple));
         s.push_str("\n");
         for function in &self.functions {
-            s.push_str(&function.to_string());
+            s.push_str(&function.borrow().to_string());
             s.push_str("\n");
         }
         write!(f, "{}", s)

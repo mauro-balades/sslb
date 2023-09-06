@@ -1,8 +1,10 @@
 use crate::ir::values::basic_block::BasicBlock;
 use crate::ir::module::Module;
+use std::cell::RefCell;
+use std::rc::Rc;
 
 pub struct IRContext {
-    pub insertion_point: Option<BasicBlock>,
+    pub insertion_point: Option<Rc<RefCell<BasicBlock>>>,
     module: Module,
 }
 
@@ -14,7 +16,7 @@ impl IRContext {
         }
     }
 
-    pub fn set_insertion_point(&mut self, bb: BasicBlock) {
+    pub fn set_insertion_point(&mut self, bb: Rc<RefCell<BasicBlock>>) {
         self.insertion_point = Some(bb);
     }
 

@@ -13,10 +13,12 @@ pub fn main() {
     let context = IRContext::new(module);
     let mut builder = Builder::new(context);
 
-    let main_fn = &mut builder.create_function("main", Vec::<Type>::new(), builder.get_void_type(), Linkage::InternalLinkage);
-    let entry = builder.create_block("entry", main_fn);
+    let main_fn = builder.create_function("main", Vec::<Type>::new(), builder.get_void_type(), Linkage::InternalLinkage);
+    let entry = builder.create_block("entry", main_fn.clone());
 
-    builder.set_insertion_point(entry);
-    builder.add_function(main_fn.clone());
+    builder.set_insertion_point(entry.clone());
+    builder.void_ret();
+
+    builder.add_function(main_fn);
     println!("{:}", builder.get_module());
 }

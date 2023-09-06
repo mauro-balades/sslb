@@ -30,6 +30,7 @@ pub enum InstructionType {
     Branch(Value),
     BranchIf(Value, Value),
     Phi(Vec<(Value, Value)>),
+    VoidReturn,
     Unreachable,
 }
 
@@ -95,6 +96,7 @@ impl ToString for Instruction {
                 format!("{} = phi {} {}", self.value.to_string(), a[0].0.get_type().to_string(), args)
             },
             InstructionType::Unreachable => format!("unreachable"),
+            InstructionType::VoidReturn => format!("return"),
         }
     }
 }

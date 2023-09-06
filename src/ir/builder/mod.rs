@@ -10,6 +10,8 @@ use crate::ir::values::function::Function;
 use crate::ir::linkage::Linkage;
 use crate::utils::find_element;
 use std::borrow::Borrow;
+use std::cell::RefCell;
+use std::rc::Rc;
 
 pub use crate::ir::builder::ctx::IRContext;
 
@@ -28,7 +30,7 @@ impl Builder {
         self.ctx.get_module()
     }
 
-    pub fn set_insertion_point(&mut self, insertion_point: BasicBlock) {
+    pub fn set_insertion_point(&mut self, insertion_point: Rc<RefCell<BasicBlock>>) {
         self.ctx.insertion_point = Some(insertion_point);
     }
 
@@ -36,7 +38,7 @@ impl Builder {
         // we can't insert to a non-existent insertion point
         match &mut self.ctx.insertion_point {
             Some(ref mut insertion_point) => {
-                insertion_point.insert(ValueEntity::Instruction(value));
+                insertion_point.borrow_mut().insert(ValueEntity::Instruction(value));
             },
             None => {
                 panic!("Cannot insert value without insertion point");
@@ -103,12 +105,12 @@ impl Builder {
 
     // utility
 
-    pub fn create_function(&self, name: &str, argument_types: Vec<Type>, return_type: Type, linkage: Linkage) -> Function {
+    pub fn create_function(&self, name: &str, argument_types: Vec<Type>, return_type: Type, linkage: Linkage) -> Rc<RefCell<Function>> {
         let fn_type = self.get_function_type(return_type, argument_types);
-        Function::create(self.ctx.get_module().get_global_value_name(name), fn_type, linkage)
+        Rc::new(RefCell::new(Function::create(self.ctx.get_module().get_global_value_name(name), fn_type, linkage)))
     }
 
-    pub fn add_function(&mut self, function: Function) {
+    pub fn add_function(&mut self, function: Rc<RefCell<Function>>) {
         self.ctx.get_module_mut().add_function(function)
     }
 
@@ -126,10 +128,10 @@ impl Builder {
     
 
     // create instructions
-    pub fn create_block(&mut self, name: &str, function: &mut Function) -> BasicBlock { // TODO: name can be empty!
-        let value = BasicBlock::new(self.ctx.get_module().get_global_value_name(name), function.clone());
-        function.add_block(value.clone());
-        value
+    pub fn create_block(&mut self, name: &str, function: Rc<RefCell<Function>>) -> Rc<RefCell<BasicBlock>> { // TODO: name can be empty!
+        let x = Rc::new(RefCell::new(BasicBlock::new(self.ctx.get_module().get_global_value_name(name), function.clone())));
+        function.borrow_mut().add_block(x.clone());
+        return x;
     }
     
     pub fn add(&mut self, lhs: Value, rhs: Value) -> Instruction {
@@ -299,9 +301,17 @@ impl Builder {
         value
     }
 
+    pub fn void_ret(&mut self) -> Instruction {
+        assert_eq!(self.ctx.insertion_point.as_ref().unwrap().borrow_mut().get_parent().as_ref().borrow().get_type().get_function_return_type(), self.get_void_type(),
+                   "Return value type does not match function return type (expected {:?}, got {:?})", self.ctx.insertion_point.as_ref().unwrap().borrow_mut().get_parent().as_ref().borrow().get_function_return_type(), self.get_void_type());
+        let value = Instruction::new(self.get_void_type(), InstructionType::VoidReturn);
+        self.insert(value.clone());
+        value
+    }
+
     pub fn ret(&mut self, value: Value) -> Instruction {
-        assert_eq!(value.get_type(), self.ctx.insertion_point.as_mut().unwrap().get_type().get_function_return_type(),
-                   "Return value type does not match function return type (expected {:?}, got {:?})", self.ctx.insertion_point.as_mut().unwrap().get_parent().get_function_return_type(), value.get_type());
+        assert_eq!(value.get_type(), self.ctx.insertion_point.as_ref().unwrap().borrow_mut().get_parent().as_ref().borrow().get_type().get_function_return_type(),
+                   "Return value type does not match function return type (expected {:?}, got {:?})", self.ctx.insertion_point.clone().unwrap().as_ref().borrow().get_parent().as_ref().borrow().get_function_return_type(), value.get_type());
         let value = Instruction::new(self.get_void_type(), InstructionType::Return(value));
         self.insert(value.clone());
         value

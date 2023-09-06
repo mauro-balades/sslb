@@ -4,15 +4,17 @@ use crate::ir::values::value::Type;
 use crate::ir::values::value::ValueEntity;
 use crate::ir::values::function::Function;
 use std::string::ToString;
+use std::cell::RefCell;
+use std::rc::Rc;
 
 impl_for_value!(BasicBlock {
     instructions: Vec<ValueEntity>,
 
-    parent: Function,
+    parent: Rc<RefCell<Function>>,
 });
 
 impl BasicBlock {
-    pub fn new(name: String, parent: Function) -> Self {
+    pub fn new(name: String, parent: Rc<RefCell<Function>>) -> Self {
         let value = Value::new(Type::Branch, name);
         Self {
             value,
@@ -26,8 +28,8 @@ impl BasicBlock {
         self.instructions.push(instruction);
     }
 
-    pub fn get_parent(&self) -> &Function {
-        &self.parent
+    pub fn get_parent(&self) -> Rc<RefCell<Function>> {
+        self.parent.clone()
     }
 
     pub fn get_type(&self) -> Type {
