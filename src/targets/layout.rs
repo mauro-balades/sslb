@@ -289,6 +289,21 @@ impl DataLayout {
 
 impl Display for DataLayout {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        write!(f, "p{}:{}", self.pointer_size, self.pointer_align) // TODO
+        // write each number's and pointer's size and alignment
+        write!(f, "p-{}:{}", self.pointer_size, self.pointer_align)?; // pointer
+        write!(f, " s-{}:{}", self.usize_size, self.usize_align)?; // usize
+        write!(f, " i-{}:{}", self.isize_size, self.isize_align)?; // isize
+        write!(f, " u8-{}:{}", self.u8_size, self.u8_align)?; // u8
+        write!(f, " i8-{}:{}", self.i8_size, self.i8_align)?; // i8
+        write!(f, " u16-{}:{}", self.u16_size, self.u16_align)?; // u16
+        write!(f, " i16-{}:{}", self.i16_size, self.i16_align)?; // i16
+        write!(f, " u32-{}:{}", self.u32_size, self.u32_align)?; // u32
+        write!(f, " i32-{}:{}", self.i32_size, self.i32_align)?; // i32
+        write!(f, " u64-{}:{}", self.u64_size, self.u64_align)?; // u64
+        write!(f, " i64-{}:{}", self.i64_size, self.i64_align)?; // i64
+        write!(f, " u128-{}:{}", self.u128_size, self.u128_align)?; // u128
+        write!(f, " i128-{}:{}", self.i128_size, self.i128_align)?; // i128
+        write!(f, " f32-{}:{}", self.f32_size, self.f32_align)?; // f32
+        write!(f, " f64-{}:{}", self.f64_size, self.f64_align) // f64
     }
 }

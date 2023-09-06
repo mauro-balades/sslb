@@ -96,7 +96,7 @@ impl ToString for Instruction {
                 format!("{} = phi {} {}", self.value.to_string(), a[0].0.get_type().to_string(), args)
             },
             InstructionType::Unreachable => format!("unreachable"),
-            InstructionType::VoidReturn => format!("return"),
+            InstructionType::VoidReturn => format!("return void"),
         }
     }
 }
