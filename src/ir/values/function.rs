@@ -63,6 +63,10 @@ impl Function {
     }
 
     pub fn add_block(&mut self, block: Rc<RefCell<BasicBlock>>) {
+        if self.linkage == Linkage::ExternalLinkage {
+            panic!("Cannot add block to external function");
+        }
+        
         self.blocks.push(block);
     }
 
@@ -99,11 +103,6 @@ impl PartialEq for Function {
 
 impl Display for Function {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let mut params = String::new();
-        for param in &self.params {
-            params.push_str(&format!("{}: {}, ", param.get_name(), param.get_type().to_string()));
-        }
-        let body = self.blocks.iter().map(|block| block.borrow().to_string()).collect::<Vec<String>>().join("\n");
         let linkage = match self.linkage {
             Linkage::ExternalLinkage => "external",
             Linkage::InternalLinkage => "internal",
@@ -114,6 +113,15 @@ impl Display for Function {
             Linkage::LinkonceLinkage => "linkonce",
             Linkage::WeakLinkage => "weak",
         };
+        if self.linkage == Linkage::ExternalLinkage {
+            return write!(f, "declare {} function @{}({}) -> {}", linkage, self.get_name(), self.params.iter().map(|param| param.get_type().to_string()).collect::<Vec<String>>().join(", "), self.get_function_return_type().to_string());
+        }
+
+        let mut params = String::new();
+        for param in &self.params {
+            params.push_str(&format!("{}: {}, ", param.get_name(), param.get_type().to_string()));
+        }
+        let body = self.blocks.iter().map(|block| block.borrow().to_string()).collect::<Vec<String>>().join("\n");
         write!(f, "define {} function @{}({}) -> {} {{\n{}}}", linkage, self.get_name(), params, self.get_function_return_type().to_string(), body)
     }
 }
