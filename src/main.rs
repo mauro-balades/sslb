@@ -17,11 +17,25 @@ pub fn main() {
 
     let main_fn = builder.create_function("main", Vec::<Type>::new(), builder.get_i32_type(), Linkage::InternalLinkage, false);
     let entry = builder.create_block("entry", main_fn.clone());
+    let tr = builder.create_block("if_true", main_fn.clone());
+    let fs = builder.create_block("if_false", main_fn.clone());
+    let cn = builder.create_block("if_cont", main_fn.clone());
 
     builder.set_insertion_point(entry.clone());
 
     let add = builder.add(builder.get_i32(1), builder.get_i32(2), None);
-    builder.ret(add.into());
+    let add2 = builder.eq(add.into(), builder.get_i32(2), None);
+    
+    builder.branch_if(add2.clone().into(), tr.clone().into(), fs.clone().into());
+
+    builder.set_insertion_point(tr.clone());
+    builder.ret(builder.get_i32(1).into());
+
+    builder.set_insertion_point(fs.clone());
+    builder.ret(builder.get_i32(0).into());
+
+    builder.set_insertion_point(cn.clone());
+    builder.ret(add2.clone().into());
 
     println!("{:}", builder.get_module());
 

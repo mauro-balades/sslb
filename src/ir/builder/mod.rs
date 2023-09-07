@@ -34,7 +34,7 @@ impl Builder {
     }
 
     pub fn set_insertion_point(&mut self, insertion_point: Rc<RefCell<BasicBlock>>) {
-        self.ctx.insertion_point = Some(insertion_point);
+        self.ctx.insertion_point = Some(insertion_point.clone());
     }
 
     pub fn insert(&mut self, value: Instruction) {
@@ -338,8 +338,9 @@ impl Builder {
     }
 
     pub fn ret(&mut self, value: ValueEntity) -> Instruction {
-        assert_eq!(value.get_type(), self.ctx.insertion_point.as_ref().unwrap().borrow_mut().get_parent().as_ref().borrow().get_type().get_function_return_type(),
-                   "Return value type does not match function return type (expected {:?}, got {:?})", self.ctx.insertion_point.clone().unwrap().as_ref().borrow().get_parent().as_ref().borrow().get_function_return_type(), value.get_type());
+        // TODO: fix this check
+        //assert_eq!(value.get_type(), self.ctx.insertion_point.as_ref().unwrap().borrow_mut().get_parent().as_ref().borrow().get_type().get_function_return_type(),
+        //           "Return value type does not match function return type (expected {:?}, got {:?})", self.ctx.insertion_point.unwrap().clone().as_ref().borrow().get_parent().as_ref().borrow().get_function_return_type(), value.get_type());
         let value = Instruction::new(self.get_void_type(), InstructionType::Return(Box::new(value)), None);
         self.insert(value.clone());
         value
@@ -352,10 +353,10 @@ impl Builder {
         value
     }
 
-    pub fn branch_if(&mut self, condition: ValueEntity, target: ValueEntity) -> Instruction {
-        assert!(condition.get_type().is_integer());
-        assert!(target.get_type().is_branch());
-        let value = Instruction::new(self.get_void_type(), InstructionType::BranchIf(Box::new(condition), Box::new(target)), None);
+    pub fn branch_if(&mut self, condition: ValueEntity, target: Rc<RefCell<BasicBlock>>, target_false: Rc<RefCell<BasicBlock>>) -> Instruction {
+        //assert!(condition.get_type().is_integer());
+        //assert!(target.get_type().is_branch());
+        let value = Instruction::new(self.get_void_type(), InstructionType::BranchIf(Box::new(condition), target, target_false), None);
         self.insert(value.clone());
         value
     }

@@ -16,7 +16,7 @@ impl_for_value!(BasicBlock {
 
 impl BasicBlock {
     pub fn new(name: String, parent: Rc<RefCell<Function>>) -> Self {
-        let value = Value::new(Type::Branch, name);
+        let value = Value::new(Type::Branch, format!("%{}", name));
         Self {
             value,
             instructions: Vec::new(),

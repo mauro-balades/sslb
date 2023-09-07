@@ -3,6 +3,9 @@ use crate::ir::values::value::Value;
 use crate::ir::values::value::Type;
 use std::string::ToString;
 use crate::ir::values::value::ValueEntity;
+use crate::ir::values::basic_block::BasicBlock;
+use std::cell::RefCell;
+use std::rc::Rc;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum InstructionType {
@@ -29,7 +32,7 @@ pub enum InstructionType {
     Call(Box<ValueEntity>, Vec<Box<ValueEntity>>),
     Return(Box<ValueEntity>),
     Branch(Box<ValueEntity>),
-    BranchIf(Box<ValueEntity>, Box<ValueEntity>),
+    BranchIf(Box<ValueEntity>, Rc<RefCell<BasicBlock>>, Rc<RefCell<BasicBlock>> ),
     Phi(Vec<(Box<ValueEntity>, Box<ValueEntity>)>),
     VoidReturn,
     Unreachable,
@@ -110,7 +113,7 @@ impl ToString for Instruction {
             },
             InstructionType::Return(a) => format!("return {} {}", a.get_type().to_string(), a.get_as_ref()),
             InstructionType::Branch(a) => format!("branch {}", a.get_as_ref()),
-            InstructionType::BranchIf(a, b) => format!("branch {} {}", a.get_as_ref(), b.get_as_ref()),
+            InstructionType::BranchIf(a, b, c) => format!("branch {}, {}, {}", a.get_as_ref(), b.borrow().get_name(), c.borrow().get_name()),
             InstructionType::Phi(a) => {
                 let mut args = String::new();
                 for arg in a {
