@@ -61,8 +61,8 @@ impl Value {
         self.ty.clone()
     }
 
-    pub fn get_name(&self) -> &String {
-        &self.name
+    pub fn get_name(&self) -> String {
+        self.name.clone()
     }
 
     pub fn get_use_list(&self) -> &Vec<Value> {
@@ -217,6 +217,28 @@ impl ToString for ValueEntity {
             ValueEntity::BasicBlock(basic_block) => basic_block.to_string(),
             ValueEntity::Instruction(instruction) => instruction.to_string(),
         }
+    }
+}
+
+impl ValueEntity {
+    pub fn get_type(&self) -> Type {
+        match self {
+            ValueEntity::Function(function) => function.get_type(),
+            ValueEntity::BasicBlock(basic_block) => basic_block.get_type(),
+            ValueEntity::Instruction(instruction) => instruction.get_type(),
+        }
+    }
+
+    pub fn get_name(&self) -> String {
+        match self {
+            ValueEntity::Function(function) => function.get_name(),
+            ValueEntity::BasicBlock(basic_block) => basic_block.get_name(),
+            ValueEntity::Instruction(instruction) => instruction.get_name(),
+        }
+    }
+
+    pub fn get_as_ref(&self) -> String {
+        self.get_name().to_string()
     }
 }
 

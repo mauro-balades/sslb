@@ -11,6 +11,7 @@ impl_for_value!(BasicBlock {
     instructions: Vec<ValueEntity>,
 
     parent: Rc<RefCell<Function>>,
+    inst_count: usize,
 });
 
 impl BasicBlock {
@@ -21,6 +22,7 @@ impl BasicBlock {
             instructions: Vec::new(),
 
             parent,
+            inst_count: 0,
         }
     }
 
@@ -36,7 +38,7 @@ impl BasicBlock {
         self.value.get_type()
     }
 
-    pub fn get_name(&self) -> &String {
+    pub fn get_name(&self) -> String {
         self.value.get_name()
     }
 
@@ -54,6 +56,12 @@ impl BasicBlock {
 
     pub fn get_value_mut(&mut self) -> &mut Value {
         &mut self.value
+    }
+
+    pub fn get_new_instruction_name(&mut self) -> String {
+        let name = format!("{}", self.inst_count);
+        self.inst_count += 1;
+        name
     }
 }
 

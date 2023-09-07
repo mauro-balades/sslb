@@ -50,8 +50,8 @@ impl Function {
         self.is_var_arg
     }
 
-    pub fn get_name(&self) -> &str {
-        &self.value.get_name()
+    pub fn get_name(&self) -> String {
+        self.value.get_name()
     }
 
     pub fn get_block(&self, name: &str) -> Option<&Rc<RefCell<BasicBlock>>> {
