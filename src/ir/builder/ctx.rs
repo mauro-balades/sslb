@@ -3,6 +3,7 @@ use crate::ir::module::Module;
 use std::cell::RefCell;
 use std::rc::Rc;
 
+#[derive(Clone)]
 pub struct IRContext {
     pub insertion_point: Option<Rc<RefCell<BasicBlock>>>,
     module: Module,

@@ -24,4 +24,9 @@ pub fn main() {
     builder.ret(add.into());
 
     println!("{:}", builder.get_module());
+
+    let mut test_file = std::fs::File::create("test.s").unwrap();
+    if builder.emit_assembly(&mut test_file).is_err() {
+        panic!("Failed to emit assembly");
+    }
 }

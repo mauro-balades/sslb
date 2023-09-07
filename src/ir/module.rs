@@ -16,6 +16,7 @@ use std::rc::Rc;
 /// functions, and their corresponding instructions in a structured manner. Various
 /// types of instructions, such as memory operations, control flow manipulations,
 /// arithmetic computations, and more, can be added and managed seamlessly.
+#[derive(Clone)]
 pub struct Module {
     functions: Vec<Rc<RefCell<Function>>>,
     name: String,

@@ -1,4 +1,4 @@
-mod ctx;
+pub mod ctx;
 
 use crate::ir::values::value::Value;
 use crate::ir::values::basic_block::BasicBlock;
@@ -12,6 +12,9 @@ use crate::utils::find_element;
 use std::borrow::Borrow;
 use std::cell::RefCell;
 use std::rc::Rc;
+
+use crate::emit::asm::AssemblyEmitter;
+use std::io::Write;
 
 pub use crate::ir::builder::ctx::IRContext;
 
@@ -369,5 +372,12 @@ impl Builder {
         let value = Instruction::new(self.get_void_type(), InstructionType::Unreachable, None);
         self.insert(value.clone());
         value
+    }
+
+    // emitters
+
+    pub fn emit_assembly(&self, file: &mut impl Write) -> Result<(), std::io::Error> {
+        let mut emitter = AssemblyEmitter::new(self.ctx.clone());
+        emitter.emit_module(file)
     }
 }
