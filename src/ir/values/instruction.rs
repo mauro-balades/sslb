@@ -66,6 +66,10 @@ impl Instruction {
             _ => return self.value.get_name()
         }
     }
+
+    pub fn instruction_type(&self) -> &InstructionType {
+        &self.instruction_type
+    }
 }
 
 impl PartialEq for Instruction {

@@ -70,6 +70,10 @@ impl Function {
         self.blocks.push(block);
     }
 
+    pub fn get_blocks(&self) -> &Vec<Rc<RefCell<BasicBlock>>> {
+        &self.blocks
+    }
+
     pub fn get_param(&self, name: &str) -> Option<&Value> {
         self.params.iter().find(|param| param.get_name() == name)
     }
@@ -92,6 +96,10 @@ impl Function {
 
     pub fn get_type(&self) -> Type {
         self.value.get_type()
+    }
+
+    pub fn get_linkage(&self) -> &Linkage {
+        &self.linkage
     }
 }
 
